@@ -1,30 +1,23 @@
-const express = require("express");
-const connectDB = require("./config/db");
-const { connectRabbitMQ } = require("./config/rabbitmq");
-const authRoutes = require("./routes/auth_routes");
-const taskRoutes = require("./routes/task_routes");
-const userRoutes = require("./routes/user_routes");
-
-require("dotenv").config();
+const express = require('express');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/auth_routes');
+const taskRoutes = require('./routes/task_routes');
+const userRoutes = require('./routes/user_routes');
+const authMiddleware = require('./middleware/authMiddleware');
+const cors = require('cors');
 
 const app = express();
 
-// Connect to MongoDB
+// Connect Database
 connectDB();
 
-// Connect to RabbitMQ
-connectRabbitMQ();
-
-// Middleware
+// Init Middleware
+app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/tasks", taskRoutes);
-app.use("/api/user", userRoutes);
+// Define Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/tasks', authMiddleware, taskRoutes);
+app.use('/api/users', authMiddleware, userRoutes);
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
