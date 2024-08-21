@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # MongoDB Service
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  # Backend Service
+  backend:
+    build: ./todo-list-backend
+    container_name: backend
+    ports:
+      - "5000:5000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/todo-list-db
+      JWT_SECRET: jwt_test
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  # Frontend Service
+  frontend:
+    build: ./todo-list-frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+# Volumes
+volumes:
+  mongo-data:
+
+# Networks
+networks:
+  app-network:
+    driver: bridge
