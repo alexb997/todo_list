@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
@@ -14,7 +14,7 @@ const TaskManager = () => {
   // Fetch all tasks from the backend
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('/api/tasks', {
+      const response = await api.get('/api/tasks', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -32,7 +32,7 @@ const TaskManager = () => {
     if (editingTaskId) {
       // Update task
       try {
-        await axios.put(
+        await api.put(
           `/api/tasks/${editingTaskId}`,
           { title, description },
           {
@@ -48,7 +48,7 @@ const TaskManager = () => {
     } else {
       // Create new task
       try {
-        const response = await axios.post(
+        const response = await api.post(
           '/api/tasks',
           { title, description },
           {
@@ -78,7 +78,7 @@ const TaskManager = () => {
   // Handle delete button click
   const handleDelete = async (taskId) => {
     try {
-      await axios.delete(`/api/tasks/${taskId}`, {
+      await api.delete(`/api/tasks/${taskId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
