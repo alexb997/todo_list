@@ -15,6 +15,19 @@ services:
     networks:
       - app-network
 
+  # RabbitMQ Service
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # RabbitMQ default port
+      - "15672:15672" # Management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - app-network
+
   # Backend Service
   backend:
     build: ./todo-list-backend
@@ -24,6 +37,7 @@ services:
     environment:
       MONGO_URI: mongodb://mongo:27017/todo-list-db
       JWT_SECRET: jwt_test
+      RABBITMQ_URI: amqp://guest:guest@rabbitmq:5672/
     depends_on:
       - mongo
     networks:

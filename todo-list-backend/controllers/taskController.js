@@ -1,10 +1,26 @@
 const Task = require('../models/Task');
+const { getChannel } = require('../config/rabbitmq');
+
+// exports.createTask = async (req, res) => {
+//   const { title, description } = req.body;
+//   try {
+//     const task = new Task({ title, description, user: req.user.id });
+//     await task.save();
+//     res.status(201).json(task);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
 
 exports.createTask = async (req, res) => {
   const { title, description } = req.body;
   try {
     const task = new Task({ title, description, user: req.user.id });
     await task.save();
+
+    const channel = getChannel();
+    channel.sendToQueue('task_queue', Buffer.from(JSON.stringify({ taskId: task._id, action: 'create' })));
+
     res.status(201).json(task);
   } catch (err) {
     res.status(500).json({ error: err.message });

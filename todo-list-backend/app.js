@@ -4,6 +4,7 @@ const authRoutes = require('./routes/auth_routes');
 const taskRoutes = require('./routes/task_routes');
 const userRoutes = require('./routes/user_routes');
 const authMiddleware = require('./middleware/authMiddleware');
+const { connectRabbitMQ } = require('./config/rabbitmq');
 const cors = require('cors');
 
 require('dotenv').config();
@@ -11,6 +12,9 @@ const app = express();
 
 // Connect Database
 connectDB();
+
+// Connect to RabbitMQ
+connectRabbitMQ();
 
 // Init Middleware
 app.use(cors());
