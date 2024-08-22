@@ -19,7 +19,7 @@ const SignUp = () => {
     }
 
     try {
-      const res = await api.post("/api/auth/signup", {
+      await api.post("/api/auth/signup", {
         username,
         email,
         password,
