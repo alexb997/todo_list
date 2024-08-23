@@ -1,50 +1,33 @@
 const Task = require("../models/Task");
-const { getChannel } = require("../config/rabbitmq");
 
-// exports.createTask = async (req, res) => {
-//   const { title, description } = req.body;
-//   try {
-//     const task = new Task({ title, description, user: req.user.id });
-//     await task.save();
-//     res.status(201).json(task);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
+const userId = "66c61570386fa513ba22bf4b";
 
 exports.createTask = async (req, res) => {
   const { title, description } = req.body;
   try {
-    const userId = "66c61570386fa513ba22bf4b";
 
     const task = new Task({ title, description, user: userId });
-
     await task.save();
-
-    const channel = getChannel();
-    channel.sendToQueue(
-      "task_queue",
-      Buffer.from(JSON.stringify({ taskId: task._id, action: "create" }))
-    );
-
     res.status(201).json(task);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+// Get all tasks for the logged-in user
 exports.getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.user.id });
+    const tasks = await Task.find({ user: userId });
     res.status(200).json(tasks);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+// Get a task by ID for the logged-in user
 exports.getTaskById = async (req, res) => {
   try {
-    const task = await Task.findOne({ _id: req.params.id, user: req.user.id });
+    const task = await Task.findOne({ _id: req.params.id, user: userId });
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
@@ -54,10 +37,11 @@ exports.getTaskById = async (req, res) => {
   }
 };
 
+// Update a task by ID for the logged-in user
 exports.updateTask = async (req, res) => {
   try {
     const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, user: req.user.id },
+      { _id: req.params.id, user: userId },
       req.body,
       { new: true }
     );
@@ -71,11 +55,12 @@ exports.updateTask = async (req, res) => {
   }
 };
 
+// Delete a task by ID for the logged-in user
 exports.deleteTask = async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({
       _id: req.params.id,
-      user: req.user.id,
+      user: userId,
     });
 
     if (!task) {

@@ -11,14 +11,9 @@ const TaskManager = () => {
     fetchTasks();
   }, []);
 
-  // Fetch all tasks from the backend
   const fetchTasks = async () => {
     try {
-      const response = await api.get("/api/tasks", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await api.get("/api/tasks/all");
       setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks", error);
@@ -30,10 +25,10 @@ const TaskManager = () => {
 
     if (editingTaskId) {
       try {
-        await api.put(
-          `/api/tasks/${editingTaskId}`,
-          { title, description }
-        );
+        await api.put(`/api/tasks/update/${editingTaskId}`, {
+          title,
+          description,
+        });
         setEditingTaskId(null);
       } catch (error) {
         console.error("Error updating task", error);
@@ -49,24 +44,18 @@ const TaskManager = () => {
 
     setTitle("");
     setDescription("");
-    fetchTasks(); // Refresh the task list
+    fetchTasks();
   };
 
-  // Handle edit button click
   const handleEdit = (task) => {
     setEditingTaskId(task._id);
     setTitle(task.title);
     setDescription(task.description);
   };
 
-  // Handle delete button click
   const handleDelete = async (taskId) => {
     try {
-      await api.delete(`/api/tasks/${taskId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await api.delete(`/api/tasks/${taskId}`);
       setTasks(tasks.filter((task) => task._id !== taskId));
     } catch (error) {
       console.error("Error deleting task", error);
