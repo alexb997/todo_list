@@ -15,7 +15,7 @@ const { getChannel } = require('../config/rabbitmq');
 exports.createTask = async (req, res) => {
   const { title, description } = req.body;
   try {
-    const task = new Task({ title, description, user: req.user.id });
+    const task = new Task({ title, description, user: 1 });
     await task.save();
 
     const channel = getChannel();
