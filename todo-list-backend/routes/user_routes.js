@@ -5,12 +5,11 @@ const {
   updateUserProfile,
   deleteUser,
 } = require("../controllers/userController");
-const authMiddleware = require("../middleware/authMiddleware");
 
-router.get("/me", authMiddleware, getUserProfile);
+router.get("/me", getUserProfile);
 
-router.put("/me", authMiddleware, updateUserProfile);
+router.put("/me", updateUserProfile);
 
-router.delete("/me", authMiddleware, deleteUser);
+router.delete("/me", deleteUser);
 
 module.exports = router;

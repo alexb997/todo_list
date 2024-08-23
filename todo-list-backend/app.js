@@ -3,7 +3,6 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth_routes");
 const taskRoutes = require("./routes/task_routes");
 const userRoutes = require("./routes/user_routes");
-const authMiddleware = require("./middleware/authMiddleware");
 const { connectRabbitMQ } = require("./config/rabbitmq");
 const cors = require("cors");
 
