@@ -22,7 +22,7 @@ app.use(express.json());
 
 // Define Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/tasks", authMiddleware, taskRoutes);
-app.use("/api/users", authMiddleware, userRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/users", userRoutes);
 
 module.exports = app;
