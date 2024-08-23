@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import api from '../api';
+import React, { useState, useEffect } from "react";
+import api from "../api";
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
 
   useEffect(() => {
@@ -14,57 +14,41 @@ const TaskManager = () => {
   // Fetch all tasks from the backend
   const fetchTasks = async () => {
     try {
-      const response = await api.get('/api/tasks', {
+      const response = await api.get("/api/tasks", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       setTasks(response.data);
     } catch (error) {
-      console.error('Error fetching tasks', error);
+      console.error("Error fetching tasks", error);
     }
   };
 
-  // Create a new task or update an existing task
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (editingTaskId) {
-      // Update task
       try {
         await api.put(
           `/api/tasks/${editingTaskId}`,
-          { title, description },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-          }
+          { title, description }
         );
         setEditingTaskId(null);
       } catch (error) {
-        console.error('Error updating task', error);
+        console.error("Error updating task", error);
       }
     } else {
-      // Create new task
       try {
-        const response = await api.post(
-          '/api/tasks',
-          { title, description },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-          }
-        );
+        const response = await api.post("/api/tasks", { title, description });
         setTasks([...tasks, response.data]);
       } catch (error) {
-        console.error('Error creating task', error);
+        console.error("Error creating task", error);
       }
     }
 
-    setTitle('');
-    setDescription('');
+    setTitle("");
+    setDescription("");
     fetchTasks(); // Refresh the task list
   };
 
@@ -80,12 +64,12 @@ const TaskManager = () => {
     try {
       await api.delete(`/api/tasks/${taskId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       setTasks(tasks.filter((task) => task._id !== taskId));
     } catch (error) {
-      console.error('Error deleting task', error);
+      console.error("Error deleting task", error);
     }
   };
 
@@ -113,7 +97,9 @@ const TaskManager = () => {
           />
         </div>
 
-        <button type="submit">{editingTaskId ? 'Update Task' : 'Add Task'}</button>
+        <button type="submit">
+          {editingTaskId ? "Update Task" : "Add Task"}
+        </button>
       </form>
 
       <h3>Your Tasks</h3>

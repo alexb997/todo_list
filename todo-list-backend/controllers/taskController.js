@@ -1,5 +1,5 @@
-const Task = require('../models/Task');
-const { getChannel } = require('../config/rabbitmq');
+const Task = require("../models/Task");
+const { getChannel } = require("../config/rabbitmq");
 
 // exports.createTask = async (req, res) => {
 //   const { title, description } = req.body;
@@ -15,11 +15,17 @@ const { getChannel } = require('../config/rabbitmq');
 exports.createTask = async (req, res) => {
   const { title, description } = req.body;
   try {
-    const task = new Task({ title, description, user: 1 });
+    const userId = "66c61570386fa513ba22bf4b";
+
+    const task = new Task({ title, description, user: userId });
+
     await task.save();
 
     const channel = getChannel();
-    channel.sendToQueue('task_queue', Buffer.from(JSON.stringify({ taskId: task._id, action: 'create' })));
+    channel.sendToQueue(
+      "task_queue",
+      Buffer.from(JSON.stringify({ taskId: task._id, action: "create" }))
+    );
 
     res.status(201).json(task);
   } catch (err) {
@@ -40,7 +46,7 @@ exports.getTaskById = async (req, res) => {
   try {
     const task = await Task.findOne({ _id: req.params.id, user: req.user.id });
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
+      return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json(task);
   } catch (err) {
@@ -57,7 +63,7 @@ exports.updateTask = async (req, res) => {
     );
 
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
+      return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json(task);
   } catch (err) {
@@ -73,9 +79,9 @@ exports.deleteTask = async (req, res) => {
     });
 
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' });
+      return res.status(404).json({ message: "Task not found" });
     }
-    res.status(200).json({ message: 'Task deleted successfully' });
+    res.status(200).json({ message: "Task deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
