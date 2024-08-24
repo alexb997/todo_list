@@ -1,19 +1,29 @@
 const Task = require("../models/Task");
+const { getChannel } = require("../config/rabbitmq");
 const userId = process.env.HARDCODED_ID;
 
 exports.createTask = async (req, res) => {
-  
   const { title, description } = req.body;
   try {
-    const task = new Task({ title, description, user: req.user.id });
+    const task = new Task({ title, description, user: userId });
     await task.save();
+
+    try {
+      const channel = getChannel();
+      channel.sendToQueue(
+        "task_queue",
+        Buffer.from(JSON.stringify({ taskId: task._id, action: "create" }))
+      );
+    } catch (err) {
+      console.error("Failed to send message to RabbitMQ", err.message);
+    }
+
     res.status(201).json(task);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// Get all tasks for the logged-in user
 exports.getTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ user: userId });
@@ -23,7 +33,6 @@ exports.getTasks = async (req, res) => {
   }
 };
 
-// Get a task by ID for the logged-in user
 exports.getTaskById = async (req, res) => {
   try {
     const task = await Task.findOne({ _id: req.params.id, user: userId });
@@ -36,11 +45,10 @@ exports.getTaskById = async (req, res) => {
   }
 };
 
-// Update a task by ID for the logged-in user
 exports.updateTask = async (req, res) => {
   try {
     const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, user: req.user.id },
+      { _id: req.params.id, user: userId },
       req.body,
       { new: true }
     );
@@ -48,23 +56,36 @@ exports.updateTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
+
+    const channel = getChannel();
+    channel.sendToQueue(
+      "tasks_queue",
+      Buffer.from(JSON.stringify({ taskId: task._id, action: "update" }))
+    );
+
     res.status(200).json(task);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// Delete a task by ID for the logged-in user
 exports.deleteTask = async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({
       _id: req.params.id,
-      user: req.user.id,
+      user: userId,
     });
 
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
+
+    const channel = getChannel();
+    channel.sendToQueue(
+      "tasks_queue",
+      Buffer.from(JSON.stringify({ taskId: task._id, action: "delete" }))
+    );
+
     res.status(200).json({ message: "Task deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });

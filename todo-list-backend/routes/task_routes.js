@@ -9,10 +9,10 @@ const {
 const authMiddleware = require("../middleware/authMiddlware");
 const router = express.Router();
 
-router.post("/", authMiddleware, createTask);
+router.post("/", createTask);
 router.get("/all", getTasks);
-router.get("/:id", authMiddleware, getTaskById);
-router.put("/update/:id", authMiddleware, updateTask);
-router.delete("/:id", authMiddleware, deleteTask);
+router.get("/:id", getTaskById);
+router.put("/update/:id", updateTask);
+router.delete("/:id", deleteTask);
 
 module.exports = router;
