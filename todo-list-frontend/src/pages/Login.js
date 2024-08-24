@@ -19,15 +19,15 @@ const Login = () => {
 
     try {
       const response = await api.post("/api/auth/login", { email, password });
-      const user = response.data.user;
+      const token = response.data.token;
 
       // Store the logged-in user's data in localStorage
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", JSON.stringify(token));
 
       // Log the user data
-      console.log("Logged in user:", user);
+      console.log("Logged with token token:", token);
 
-      setSuccess("Logged in successfully!" + JSON.stringify(user));
+      setSuccess("Logged in successfully!" + JSON.stringify(token));
       setEmail("");
       setPassword("");
     } catch (err) {

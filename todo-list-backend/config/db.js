@@ -3,14 +3,13 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(
-      "mongodb://root:pass@mongo:27017/todo-list-db",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        authSource: `admin`
-      }
-    );
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      authSource: `admin`,
+      user: "root",
+      pass: "pass",
+    });
     console.log("MongoDB connected");
   } catch (err) {
     console.error(err.message);
