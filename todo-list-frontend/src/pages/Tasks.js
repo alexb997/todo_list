@@ -27,15 +27,24 @@ const TaskManager = () => {
       try {
         await api.put(`/api/tasks/update/${editingTaskId}`, {
           title,
-          description,
-        });
+          description},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
         setEditingTaskId(null);
       } catch (error) {
         console.error("Error updating task", error);
       }
     } else {
       try {
-        const response = await api.post("/api/tasks", { title, description });
+        const response = await api.post("/api/tasks", { title, description },{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
         setTasks([...tasks, response.data]);
       } catch (error) {
         console.error("Error creating task", error);

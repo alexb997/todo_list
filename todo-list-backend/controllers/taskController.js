@@ -2,9 +2,10 @@ const Task = require("../models/Task");
 const userId = process.env.HARDCODED_ID;
 
 exports.createTask = async (req, res) => {
+  
   const { title, description } = req.body;
   try {
-    const task = new Task({ title, description, user: userId });
+    const task = new Task({ title, description, user: req.user.id });
     await task.save();
     res.status(201).json(task);
   } catch (err) {
@@ -39,7 +40,7 @@ exports.getTaskById = async (req, res) => {
 exports.updateTask = async (req, res) => {
   try {
     const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, user: userId },
+      { _id: req.params.id, user: req.user.id },
       req.body,
       { new: true }
     );
@@ -58,7 +59,7 @@ exports.deleteTask = async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({
       _id: req.params.id,
-      user: userId,
+      user: req.user.id,
     });
 
     if (!task) {
