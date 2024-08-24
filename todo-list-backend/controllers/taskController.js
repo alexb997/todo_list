@@ -1,11 +1,9 @@
 const Task = require("../models/Task");
-
-const userId = "66c61570386fa513ba22bf4b";
+const userId = process.env.HARDCODED_ID;
 
 exports.createTask = async (req, res) => {
   const { title, description } = req.body;
   try {
-
     const task = new Task({ title, description, user: userId });
     await task.save();
     res.status(201).json(task);

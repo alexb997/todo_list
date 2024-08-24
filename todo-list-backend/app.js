@@ -6,7 +6,7 @@ const userRoutes = require("./routes/user_routes");
 const { connectRabbitMQ } = require("./config/rabbitmq");
 const cors = require("cors");
 
-require("dotenv").config();
+
 const app = express();
 
 // Connect Database
