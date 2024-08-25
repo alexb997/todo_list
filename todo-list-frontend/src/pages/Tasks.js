@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Row from bootstrap;
+import { Form, Button, Card, Row, Col, Container } from "react-bootstrap";
 import api from "../api";
 
 const TaskManager = () => {
@@ -26,13 +26,13 @@ const TaskManager = () => {
 
     if (editingTaskId) {
       try {
-        await api.put(`/api/tasks/update/${editingTaskId}`, {
-          title,
-          description},
+        await api.put(
+          `/api/tasks/update/${editingTaskId}`,
+          { title, description },
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
         );
         setEditingTaskId(null);
@@ -41,11 +41,15 @@ const TaskManager = () => {
       }
     } else {
       try {
-        const response = await api.post("/api/tasks", { title, description },{
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+        const response = await api.post(
+          "/api/tasks",
+          { title, description },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
-        });
+        );
         setTasks([...tasks, response.data]);
       } catch (error) {
         console.error("Error creating task", error);
@@ -73,45 +77,38 @@ const TaskManager = () => {
   };
 
   return (
-    <div className="task-manager">
-      <h2>Task Manager</h2>
+    <Container>
+      <h2 className="my-4 text-center">Task Manager</h2>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title:</label>
-          <input
+      <Form onSubmit={handleSubmit} className="mb-4">
+        <Form.Group controlId="formTitle" className="mb-3">
+          <Form.Label>Title</Form.Label>
+          <Form.Control
             type="text"
+            placeholder="Enter task title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
           />
-        </div>
+        </Form.Group>
 
-        <div>
-          <label>Description:</label>
-          <textarea
+        <Form.Group controlId="formDescription" className="mb-3">
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            placeholder="Enter task description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
           />
-        </div>
+        </Form.Group>
 
-        <button type="submit">
+        <Button variant="primary" type="submit">
           {editingTaskId ? "Update Task" : "Add Task"}
-        </button>
-      </form>
+        </Button>
+      </Form>
 
-      <h3>Your Tasks</h3>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task._id}>
-            <h4>{task.title}</h4>
-            <p>{task.description}</p>
-            <button onClick={() => handleEdit(task)}>Edit</button>
-            <button onClick={() => handleDelete(task._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
       <h3 className="mt-4">Your Tasks</h3>
       <Row xs={1} md={2} lg={3} className="g-4">
         {tasks.map((task) => (
@@ -139,7 +136,7 @@ const TaskManager = () => {
           </Col>
         ))}
       </Row>
-    </div>
+    </Container>
   );
 };
 
