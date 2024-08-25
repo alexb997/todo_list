@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Row from bootstrap;
 import api from "../api";
 
 const TaskManager = () => {
@@ -111,6 +112,33 @@ const TaskManager = () => {
           </li>
         ))}
       </ul>
+      <h3 className="mt-4">Your Tasks</h3>
+      <Row xs={1} md={2} lg={3} className="g-4">
+        {tasks.map((task) => (
+          <Col key={task._id}>
+            <Card>
+              <Card.Header as="h5">{task.title}</Card.Header>
+              <Card.Body>
+                <Card.Title>In Progress</Card.Title>
+                <Card.Text>{task.description}</Card.Text>
+                <Button
+                  variant="primary"
+                  onClick={() => handleEdit(task)}
+                  className="me-2"
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() => handleDelete(task._id)}
+                >
+                  Delete
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
     </div>
   );
 };
