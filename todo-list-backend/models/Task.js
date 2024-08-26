@@ -12,6 +12,12 @@ const TaskSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  editedBy: {
+    type: String,
+  },
+  createdBy: {
+    type: String,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

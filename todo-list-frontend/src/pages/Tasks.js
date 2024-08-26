@@ -6,6 +6,8 @@ const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [createdBy, setCreatedBy] = useState("stef");
+  const [editedBy, setEditedBy] = useState("stef");
   const [editingTaskId, setEditingTaskId] = useState(null);
 
   useEffect(() => {
@@ -25,10 +27,11 @@ const TaskManager = () => {
     e.preventDefault();
 
     if (editingTaskId) {
+      setEditedBy(localStorage.getItem("username"));
       try {
         await api.put(
           `/api/tasks/update/${editingTaskId}`,
-          { title, description },
+          { title, description, editedBy, editedBy },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -40,10 +43,12 @@ const TaskManager = () => {
         console.error("Error updating task", error);
       }
     } else {
+      setCreatedBy(localStorage.getItem("username"));
+      setEditedBy(createdBy);
       try {
         const response = await api.post(
           "/api/tasks",
-          { title, description },
+          { title, description, createdBy, editedBy },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -58,6 +63,8 @@ const TaskManager = () => {
 
     setTitle("");
     setDescription("");
+    setEditedBy("");
+    setCreatedBy("");
     fetchTasks();
   };
 
@@ -118,6 +125,8 @@ const TaskManager = () => {
               <Card.Body>
                 <Card.Title>In Progress</Card.Title>
                 <Card.Text>{task.description}</Card.Text>
+                <Card.Text>Created by: {task.createdBy}</Card.Text>
+                <Card.Text>Last edited by: {task.editedBy}</Card.Text>
                 <Button
                   variant="primary"
                   onClick={() => handleEdit(task)}
@@ -125,10 +134,7 @@ const TaskManager = () => {
                 >
                   Edit
                 </Button>
-                <Button
-                  variant="danger"
-                  onClick={() => handleDelete(task._id)}
-                >
+                <Button variant="danger" onClick={() => handleDelete(task._id)}>
                   Delete
                 </Button>
               </Card.Body>
