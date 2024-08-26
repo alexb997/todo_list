@@ -21,14 +21,17 @@ const Login = () => {
     try {
       const response = await api.post("/api/auth/login", { email, password });
       const token = response.data.token;
+      const username = response.data.username;
 
       // Store the logged-in user's data in localStorage
       localStorage.setItem("token", JSON.stringify(token));
+      localStorage.setItem("username", username);
 
       // Log the user data
       console.log("Logged in with token:", token);
+      console.log("Logged in with username:", username);
 
-      setSuccess("Logged in successfully!");
+      setSuccess("Logged in successfully as: " + username + "!");
       setEmail("");
       setPassword("");
     } catch (err) {
