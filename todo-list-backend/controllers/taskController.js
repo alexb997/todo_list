@@ -3,9 +3,18 @@ const { getChannel } = require("../config/rabbitmq");
 const userId = process.env.HARDCODED_ID;
 
 exports.createTask = async (req, res) => {
-  const { title, description, createdBy, editedBy } = req.body;
+  const { title, description, createdBy, editedBy, startDate, endDate } =
+    req.body;
   try {
-    const task = new Task({ title, description, user: userId, createdBy, editedBy });
+    const task = new Task({
+      title,
+      description,
+      user: userId,
+      createdBy,
+      editedBy,
+      startDate,
+      endDate,
+    });
     await task.save();
 
     try {
@@ -46,10 +55,18 @@ exports.getTaskById = async (req, res) => {
 };
 
 exports.updateTask = async (req, res) => {
+  const { startDate, endDate, editedBy } = req.body;
+
   try {
     const task = await Task.findOneAndUpdate(
       { _id: req.params.id, user: userId },
-      req.body,
+      {
+        ...req.body,
+        lastEditedAt: Date.now(),
+        startDate: startDate || task.startDate,
+        endDate: endDate || task.endDate,
+        editedBy: editedBy || task.editedBy,
+      },
       { new: true }
     );
 
