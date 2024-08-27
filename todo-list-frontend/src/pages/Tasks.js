@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Card, Row, Col, Container } from "react-bootstrap";
 import api from "../api";
+import CalendarComponent from "../components/Calendar";
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState([]);
@@ -115,7 +116,7 @@ const TaskManager = () => {
           {editingTaskId ? "Update Task" : "Add Task"}
         </Button>
       </Form>
-
+      <CalendarComponent />
       <h3 className="mt-4">Your Tasks</h3>
       <Row xs={1} md={2} lg={3} className="g-4">
         {tasks.map((task) => (
