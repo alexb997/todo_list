@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Card, Row, Col, Container } from "react-bootstrap";
 import api from "../api";
-import CalendarComponent from "../components/Calendar";
 
-const TaskManager = () => {
+const Tasks = ({ selectedDate }) => {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [createdBy, setCreatedBy] = useState("stef");
-  const [editedBy, setEditedBy] = useState("stef");
+  const [createdBy, setCreatedBy] = useState(localStorage.getItem("username"));
+  const [editedBy, setEditedBy] = useState(localStorage.getItem("username"));
   const [editingTaskId, setEditingTaskId] = useState(null);
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [selectedDate]);
 
   const fetchTasks = async () => {
     try {
       const response = await api.get("/api/tasks/all");
-      setTasks(response.data);
+      const filteredTasks = response.data.filter((task) => {
+        const taskStartDate = new Date(task.startDate);
+        const taskEndDate = new Date(task.endDate);
+        return (
+          taskStartDate <= selectedDate && taskEndDate >= selectedDate
+        );
+      });
+      setTasks(filteredTasks);
     } catch (error) {
       console.error("Error fetching tasks", error);
     }
@@ -27,12 +33,20 @@ const TaskManager = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const taskData = {
+      title,
+      description,
+      createdBy,
+      editedBy,
+      startDate: new Date(),
+      endDate: selectedDate || new Date(),
+    };
+
     if (editingTaskId) {
-      setEditedBy(localStorage.getItem("username"));
       try {
         await api.put(
           `/api/tasks/update/${editingTaskId}`,
-          { title, description, editedBy, editedBy },
+          taskData,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -44,12 +58,10 @@ const TaskManager = () => {
         console.error("Error updating task", error);
       }
     } else {
-      setCreatedBy(localStorage.getItem("username"));
-      setEditedBy(createdBy);
       try {
         const response = await api.post(
           "/api/tasks",
-          { title, description, createdBy, editedBy },
+          taskData,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -64,8 +76,6 @@ const TaskManager = () => {
 
     setTitle("");
     setDescription("");
-    setEditedBy("");
-    setCreatedBy("");
     fetchTasks();
   };
 
@@ -116,7 +126,7 @@ const TaskManager = () => {
           {editingTaskId ? "Update Task" : "Add Task"}
         </Button>
       </Form>
-      <CalendarComponent />
+
       <h3 className="mt-4">Your Tasks</h3>
       <Row xs={1} md={2} lg={3} className="g-4">
         {tasks.map((task) => (
@@ -124,8 +134,9 @@ const TaskManager = () => {
             <Card>
               <Card.Header as="h5">{task.title}</Card.Header>
               <Card.Body>
-                <Card.Title>In Progress</Card.Title>
                 <Card.Text>{task.description}</Card.Text>
+                <Card.Text>Start Date: {new Date(task.startDate).toLocaleString()}</Card.Text>
+                <Card.Text>End Date: {new Date(task.endDate).toLocaleString()}</Card.Text>
                 <Card.Text>Created by: {task.createdBy}</Card.Text>
                 <Card.Text>Last edited by: {task.editedBy}</Card.Text>
                 <Button
@@ -147,4 +158,4 @@ const TaskManager = () => {
   );
 };
 
-export default TaskManager;
+export default Tasks;

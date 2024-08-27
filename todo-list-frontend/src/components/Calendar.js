@@ -1,22 +1,21 @@
 import React, { useState } from "react";
-import CalendarComponent from "./CalendarComponent";
-import TaskManager from "./TaskManager";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css"; // Import the calendar CSS for styling
 
-const TaskCalendar = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
+const CalendarComponent = ({ onDateChange }) => {
+  const [date, setDate] = useState(new Date());
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
+  const handleDateChange = (selectedDate) => {
+    setDate(selectedDate);
+    onDateChange(selectedDate);
   };
 
   return (
-    <div>
-      <h1>Task Calendar</h1>
-      <CalendarComponent onDateChange={handleDateChange} />
-
-      <TaskManager selectedDate={selectedDate} />
+    <div className="calendar-component">
+      <Calendar onChange={handleDateChange} value={date} />
+      <p>Selected Date: {date.toDateString()}</p>
     </div>
   );
 };
 
-export default TaskCalendar;
+export default CalendarComponent;
