@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import CalendarComponent from "./CalendarComponent";
+import CalendarComponent from "../components/Calendar";
 import TaskManager from "./Tasks";
 
 const TaskCalendar = () => {
