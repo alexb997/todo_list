@@ -6,7 +6,7 @@ const Tasks = ({ selectedDate }) => {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [createdBy, setCreatedBy] = useState(localStorage.getItem("username"));
+  const [createdBy, setCreatedBy] = useState("");
   const [editedBy, setEditedBy] = useState(localStorage.getItem("username"));
   const [editingTaskId, setEditingTaskId] = useState(null);
 
@@ -17,14 +17,14 @@ const Tasks = ({ selectedDate }) => {
   const fetchTasks = async () => {
     try {
       const response = await api.get("/api/tasks/all");
-      const filteredTasks = response.data.filter((task) => {
-        const taskStartDate = new Date(task.startDate);
-        const taskEndDate = new Date(task.endDate);
-        return (
-          taskStartDate <= selectedDate && taskEndDate >= selectedDate
-        );
-      });
-      setTasks(filteredTasks);
+      // const filteredTasks = response.data.filter((task) => {
+      //   const taskStartDate = new Date(task.startDate);
+      //   const taskEndDate = new Date(task.endDate);
+      //   return (
+      //     taskStartDate <= selectedDate && taskEndDate >= selectedDate
+      //   );
+      // });
+      setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks", error);
     }
@@ -58,6 +58,7 @@ const Tasks = ({ selectedDate }) => {
         console.error("Error updating task", error);
       }
     } else {
+      taskData.createdBy = localStorage.getItem("username");
       try {
         const response = await api.post(
           "/api/tasks",
@@ -82,6 +83,7 @@ const Tasks = ({ selectedDate }) => {
   const handleEdit = (task) => {
     setEditingTaskId(task._id);
     setTitle(task.title);
+    setCreatedBy(task.createdBy);
     setDescription(task.description);
   };
 

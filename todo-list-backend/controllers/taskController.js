@@ -86,6 +86,64 @@ exports.updateTask = async (req, res) => {
   }
 };
 
+exports.getTasksDueBetweenDates = async (req, res) => {
+  const { startDate, endDate } = req.query;
+  try {
+    const tasks = await Task.find({
+      user: userId,
+      endDate: { $gte: new Date(startDate), $lte: new Date(endDate) },
+    });
+    res.status(200).json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+exports.getTasksDueOnDate = async (req, res) => {
+  const { date } = req.query;
+  try {
+    const start = new Date(date);
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999); // End of the day
+
+    const tasks = await Task.find({
+      user: userId,
+      endDate: { $gte: start, $lte: end },
+    });
+    res.status(200).json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+xports.getTasksCreatedBetweenDates = async (req, res) => {
+  const { startDate, endDate } = req.query;
+  try {
+    const tasks = await Task.find({
+      user: userId,
+      createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) },
+    });
+    res.status(200).json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getTasksCreatedOnDate = async (req, res) => {
+  const { date } = req.query;
+  try {
+    const start = new Date(date);
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+    const tasks = await Task.find({
+      user: userId,
+      createdAt: { $gte: start, $lte: end },
+    });
+    res.status(200).json(tasks);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.deleteTask = async (req, res) => {
   try {
     const task = await Task.findOneAndDelete({
