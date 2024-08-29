@@ -62,7 +62,7 @@ exports.updateTask = async (req, res) => {
       { _id: req.params.id, user: userId },
       {
         ...req.body,
-        lastEditedAt: Date.now(),
+        lastEditedAt: Date.now(), // Ensure this updates on every edit
         startDate: startDate || task.startDate,
         endDate: endDate || task.endDate,
         editedBy: editedBy || task.editedBy,

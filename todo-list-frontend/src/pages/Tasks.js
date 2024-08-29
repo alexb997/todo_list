@@ -44,15 +44,11 @@ const Tasks = ({ selectedDate }) => {
 
     if (editingTaskId) {
       try {
-        await api.put(
-          `/api/tasks/update/${editingTaskId}`,
-          taskData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        await api.put(`/api/tasks/update/${editingTaskId}`, taskData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         setEditingTaskId(null);
       } catch (error) {
         console.error("Error updating task", error);
@@ -60,15 +56,11 @@ const Tasks = ({ selectedDate }) => {
     } else {
       taskData.createdBy = localStorage.getItem("username");
       try {
-        const response = await api.post(
-          "/api/tasks",
-          taskData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const response = await api.post("/api/tasks", taskData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         setTasks([...tasks, response.data]);
       } catch (error) {
         console.error("Error creating task", error);
@@ -137,8 +129,13 @@ const Tasks = ({ selectedDate }) => {
               <Card.Header as="h5">{task.title}</Card.Header>
               <Card.Body>
                 <Card.Text>{task.description}</Card.Text>
-                <Card.Text>Start Date: {new Date(task.startDate).toLocaleString()}</Card.Text>
-                <Card.Text>End Date: {new Date(task.endDate).toLocaleString()}</Card.Text>
+                <Card.Text>
+                  Start Date: {new Date(task.startDate).toLocaleString()}
+                </Card.Text>
+                <Card.Text>
+                  End Date: {new Date(task.endDate).toLocaleString()}
+                </Card.Text>
+                <Card.Text>Last Edited At: {new Date(task.lastEditedAt).toLocaleString()}</Card.Text>
                 <Card.Text>Created by: {task.createdBy}</Card.Text>
                 <Card.Text>Last edited by: {task.editedBy}</Card.Text>
                 <Button
