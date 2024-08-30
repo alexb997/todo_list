@@ -6,17 +6,28 @@ const TaskEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  // State to hold task information
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [createdBy, setCreatedBy] = useState("");
+  const [completed, setCompleted] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [editedBy, setEditedBy] = useState(localStorage.getItem("username"));
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
+    // Fetch the task details
     const fetchTask = async () => {
       try {
         const res = await api.get(`/api/tasks/${id}`);
         setTitle(res.data.title);
         setDescription(res.data.description);
+        setCreatedBy(res.data.createdBy);
+        setCompleted(res.data.completed);
+        setStartDate(res.data.startDate ? new Date(res.data.startDate).toISOString().substring(0, 10) : "");
+        setEndDate(res.data.endDate ? new Date(res.data.endDate).toISOString().substring(0, 10) : "");
       } catch (err) {
         setError("Failed to load task");
         console.error(err);
@@ -37,9 +48,15 @@ const TaskEdit = () => {
     }
 
     try {
-      const res = await api.put(`/api/tasks/${id}`, {
+      await api.put(`/api/tasks/${id}`, {
         title,
         description,
+        createdBy,
+        completed,
+        startDate,
+        endDate,
+        editedBy,
+        lastEditedAt: new Date(),
       });
       setSuccess("Task updated successfully!");
       setTimeout(() => navigate("/tasks"), 2000);
@@ -69,6 +86,30 @@ const TaskEdit = () => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Completed:</label>
+          <input
+            type="checkbox"
+            checked={completed}
+            onChange={(e) => setCompleted(e.target.checked)}
+          />
+        </div>
+        <div>
+          <label>Start Date:</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>End Date:</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
         <button type="submit">Update Task</button>
