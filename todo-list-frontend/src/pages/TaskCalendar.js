@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CalendarComponent from "../components/Calendar";
-import TaskManager from "./Tasks";
+import TaskManager from "./TaskManager";
 
 const TaskCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
