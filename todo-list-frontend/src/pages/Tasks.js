@@ -7,6 +7,7 @@ const Tasks = ({ selectedDate }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [createdBy, setCreatedBy] = useState("");
+  const [completed, setCompleted] = useState(false);
   const [editedBy, setEditedBy] = useState(localStorage.getItem("username"));
   const [editingTaskId, setEditingTaskId] = useState(null);
 
@@ -38,6 +39,7 @@ const Tasks = ({ selectedDate }) => {
       description,
       createdBy,
       editedBy,
+      completed,
       startDate: new Date(),
       endDate: selectedDate || new Date(),
     };
@@ -75,6 +77,7 @@ const Tasks = ({ selectedDate }) => {
   const handleEdit = (task) => {
     setEditingTaskId(task._id);
     setTitle(task.title);
+    setCompleted(task.completed);
     setCreatedBy(task.createdBy);
     setDescription(task.description);
   };
@@ -138,6 +141,7 @@ const Tasks = ({ selectedDate }) => {
                 <Card.Text>Last Edited At: {new Date(task.lastEditedAt).toLocaleString()}</Card.Text>
                 <Card.Text>Created by: {task.createdBy}</Card.Text>
                 <Card.Text>Last edited by: {task.editedBy}</Card.Text>
+                <Card.Text>Status: {task.completed? "Complete" : "Incomplete"}</Card.Text>
                 <Button
                   variant="primary"
                   onClick={() => handleEdit(task)}

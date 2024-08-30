@@ -7,6 +7,8 @@ const DateFilteredTasks = () => {
   const [dateFilter, setDateFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [completed, setCompleted] = useState(false);
+  const [editedBy, setEditedBy] = useState(localStorage.getItem("username"));
   const [filterType, setFilterType] = useState("dueOnDate");
 
   const handleFetchTasks = async (e) => {
@@ -108,6 +110,8 @@ const DateFilteredTasks = () => {
                 <Card.Text>End Date: {new Date(task.endDate).toLocaleString()}</Card.Text>
                 <Card.Text>Created by: {task.createdBy}</Card.Text>
                 <Card.Text>Last edited by: {task.editedBy}</Card.Text>
+                <Card.Text>Last Edited At: {new Date(task.lastEditedAt).toLocaleString()}</Card.Text>
+                <Card.Text>Status: {task.completed? "Complete" : "Incomplete"}</Card.Text>
               </Card.Body>
             </Card>
           </Col>
